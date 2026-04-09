@@ -297,6 +297,22 @@
           <p id="sessionText" class="muted"></p>
           <button class="btn" id="logoutBtn" type="button">Cerrar sesion</button>
         </div>
+
+        <div class="referral-box" id="referralBox" hidden>
+          <h3>Invita y gana</h3>
+          <p class="muted">Comparte tu enlace o QR. Cuando se registren con tu referencia, puedes dar y recibir beneficios.</p>
+          <p class="ref-code" id="referralCodeText">Codigo: -</p>
+
+          <div class="ref-link-row">
+            <input id="referralLinkInput" type="text" readonly aria-label="Enlace de referido" />
+            <button class="btn primary" id="copyReferralBtn" type="button">Copiar enlace</button>
+          </div>
+
+          <div class="ref-qr-wrap">
+            <canvas id="referralQr" width="220" height="220" aria-label="Codigo QR de referido"></canvas>
+          </div>
+          <p id="referralStatus" class="status" role="status" aria-live="polite"></p>
+        </div>
       </section>
 
       <section id="contacto" class="panel section">
@@ -385,12 +401,15 @@
     WhatsApp
   </a>
 
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     const WHATSAPP_NUMBER_E164 = "573112223344";
     const SUPABASE_URL = "https://ztxbdwcfxtkmjcgbuaxq.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_U3YBitnqeWHKdGtYgPENsw_VkcOFl5O";
     const ANALYTICS_GA4_ID = "";
+    const REF_STORAGE_KEY = "af_ref_code";
+    const REF_CODE_REGEX = /^[A-Z0-9]{6,12}$/;
 
     const baseMsg = "Hola, vengo de la pagina de Apoyo Financiero. Quiero recibir ayuda.";
     const waTop = document.getElementById("waTop");
@@ -410,6 +429,12 @@
     const sessionBox = document.getElementById("sessionBox");
     const sessionText = document.getElementById("sessionText");
     const logoutBtn = document.getElementById("logoutBtn");
+    const referralBox = document.getElementById("referralBox");
+    const referralCodeText = document.getElementById("referralCodeText");
+    const referralLinkInput = document.getElementById("referralLinkInput");
+    const copyReferralBtn = document.getElementById("copyReferralBtn");
+    const referralQr = document.getElementById("referralQr");
+    const referralStatus = document.getElementById("referralStatus");
     const authTabs = document.querySelectorAll(".auth-tab");
     const registroBox = document.getElementById("registroBox");
     const loginBox = document.getElementById("loginBox");
@@ -512,10 +537,249 @@
       return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
     }
 
+    function normalizeReferralCode(value) {
+      return (value || "").trim().toUpperCase();
+    }
+
+    function getStoredReferralCode() {
+      try {
+        return normalizeReferralCode(window.localStorage.getItem(REF_STORAGE_KEY));
+      } catch (_error) {
+        return "";
+      }
+    }
+
+    function setStoredReferralCode(code) {
+      try {
+        window.localStorage.setItem(REF_STORAGE_KEY, normalizeReferralCode(code));
+      } catch (_error) {
+        return;
+      }
+    }
+
+    function clearStoredReferralCode() {
+      try {
+        window.localStorage.removeItem(REF_STORAGE_KEY);
+      } catch (_error) {
+        return;
+      }
+    }
+
+    function generateReferralCode() {
+      const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+      let code = "AF";
+      for (let i = 0; i < 6; i += 1) {
+        const randomIndex = Math.floor(Math.random() * alphabet.length);
+        code += alphabet.charAt(randomIndex);
+      }
+      return code;
+    }
+
+    function buildReferralLink(code) {
+      return window.location.origin + window.location.pathname + "?ref=" + encodeURIComponent(code);
+    }
+
+    function captureReferralFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      const refParam = normalizeReferralCode(params.get("ref"));
+
+      if (!REF_CODE_REGEX.test(refParam)) {
+        return;
+      }
+
+      setStoredReferralCode(refParam);
+      trackEvent("referral_code_captured", { source: "url", code: refParam });
+
+      params.delete("ref");
+      const cleanSearch = params.toString();
+      const cleanUrl = window.location.pathname + (cleanSearch ? "?" + cleanSearch : "") + window.location.hash;
+      window.history.replaceState({}, "", cleanUrl);
+    }
+
+    function setReferralStatus(message, type) {
+      if (!referralStatus) {
+        return;
+      }
+      referralStatus.textContent = message;
+      referralStatus.className = "status show " + type;
+    }
+
+    function resetReferralStatus() {
+      if (!referralStatus) {
+        return;
+      }
+      referralStatus.textContent = "";
+      referralStatus.className = "status";
+    }
+
+    function setReferralBoxVisible(visible) {
+      if (!referralBox) {
+        return;
+      }
+      referralBox.hidden = !visible;
+      if (!visible) {
+        resetReferralStatus();
+      }
+    }
+
+    async function loadProfile(userId) {
+      if (!isSupabaseReady()) {
+        return null;
+      }
+
+      const result = await supabaseClient
+        .from("profiles")
+        .select("user_id, full_name, referral_code, referred_by_code, referral_credits")
+        .eq("user_id", userId)
+        .maybeSingle();
+
+      if (result.error) {
+        return null;
+      }
+
+      return result.data;
+    }
+
+    async function ensureUserProfile(user) {
+      if (!isSupabaseReady() || !user) {
+        return null;
+      }
+
+      const existing = await loadProfile(user.id);
+      if (existing) {
+        return existing;
+      }
+
+      for (let attempt = 0; attempt < 5; attempt += 1) {
+        const insertResult = await supabaseClient
+          .from("profiles")
+          .insert({
+            user_id: user.id,
+            full_name: user.user_metadata && user.user_metadata.full_name ? user.user_metadata.full_name : null,
+            referral_code: generateReferralCode()
+          })
+          .select("user_id, full_name, referral_code, referred_by_code, referral_credits")
+          .single();
+
+        if (!insertResult.error) {
+          return insertResult.data;
+        }
+
+        if (insertResult.error.code !== "23505") {
+          break;
+        }
+      }
+
+      return loadProfile(user.id);
+    }
+
+    async function applyPendingReferral(user, ownProfile) {
+      if (!isSupabaseReady() || !user || !ownProfile) {
+        return ownProfile;
+      }
+
+      const pendingCode = getStoredReferralCode();
+      if (!pendingCode || !REF_CODE_REGEX.test(pendingCode)) {
+        return ownProfile;
+      }
+
+      if (ownProfile.referred_by_code || ownProfile.referral_code === pendingCode) {
+        clearStoredReferralCode();
+        return ownProfile;
+      }
+
+      const referrerResult = await supabaseClient
+        .from("profiles")
+        .select("user_id, referral_code")
+        .eq("referral_code", pendingCode)
+        .maybeSingle();
+
+      if (referrerResult.error || !referrerResult.data) {
+        return ownProfile;
+      }
+
+      if (referrerResult.data.user_id === user.id) {
+        clearStoredReferralCode();
+        return ownProfile;
+      }
+
+      const updateResult = await supabaseClient
+        .from("profiles")
+        .update({ referred_by_code: pendingCode })
+        .eq("user_id", user.id)
+        .is("referred_by_code", null);
+
+      if (updateResult.error) {
+        return ownProfile;
+      }
+
+      await supabaseClient
+        .from("referrals")
+        .upsert({
+          referrer_user_id: referrerResult.data.user_id,
+          referred_user_id: user.id,
+          referral_code: pendingCode,
+          status: "pending"
+        }, {
+          onConflict: "referred_user_id"
+        });
+
+      trackEvent("referral_applied", { code: pendingCode });
+      clearStoredReferralCode();
+      setAuthStatus(loginStatus, "Referencia aplicada correctamente. Ya haces parte del programa de beneficios.", "success");
+      return loadProfile(user.id);
+    }
+
+    function renderReferralPanel(profile) {
+      if (!profile || !profile.referral_code) {
+        setReferralBoxVisible(false);
+        return;
+      }
+
+      const referralCode = normalizeReferralCode(profile.referral_code);
+      const referralLink = buildReferralLink(referralCode);
+
+      referralCodeText.textContent = "Codigo: " + referralCode;
+      referralLinkInput.value = referralLink;
+      setReferralBoxVisible(true);
+      resetReferralStatus();
+
+      if (window.QRCode && referralQr) {
+        window.QRCode.toCanvas(referralQr, referralLink, {
+          width: 220,
+          margin: 1,
+          color: {
+            dark: "#0f172a",
+            light: "#f8fbff"
+          }
+        }, function (error) {
+          if (error) {
+            setReferralStatus("No se pudo generar el codigo QR en este momento.", "error");
+          }
+        });
+      }
+    }
+
+    async function syncReferralState(session) {
+      if (!session || !session.user || !isSupabaseReady()) {
+        setReferralBoxVisible(false);
+        return;
+      }
+
+      let profile = await ensureUserProfile(session.user);
+      if (!profile) {
+        return;
+      }
+
+      profile = await applyPendingReferral(session.user, profile) || profile;
+      renderReferralPanel(profile);
+    }
+
     function setSessionInfo(session) {
       if (!session || !session.user) {
         sessionBox.hidden = true;
         sessionText.textContent = "";
+        setReferralBoxVisible(false);
         return;
       }
 
@@ -532,6 +796,7 @@
       }
       const result = await supabaseClient.auth.getSession();
       setSessionInfo(result.data.session);
+      await syncReferralState(result.data.session);
     }
 
     async function saveLead(leadData) {
@@ -622,6 +887,7 @@
       page_path: window.location.pathname,
       page_title: document.title
     });
+    captureReferralFromUrl();
     initScrollReveal();
     restoreSession();
     setAuthView("registro");
@@ -635,8 +901,26 @@
     }
 
     if (isSupabaseReady()) {
-      supabaseClient.auth.onAuthStateChange(function (_event, session) {
+      supabaseClient.auth.onAuthStateChange(async function (_event, session) {
         setSessionInfo(session);
+        await syncReferralState(session);
+      });
+    }
+
+    if (copyReferralBtn) {
+      copyReferralBtn.addEventListener("click", async function () {
+        if (!referralLinkInput || !referralLinkInput.value) {
+          setReferralStatus("No hay enlace disponible para copiar.", "error");
+          return;
+        }
+
+        try {
+          await navigator.clipboard.writeText(referralLinkInput.value);
+          trackEvent("referral_link_copied");
+          setReferralStatus("Enlace copiado. Compartelo para empezar a referir.", "success");
+        } catch (_error) {
+          setReferralStatus("No se pudo copiar automaticamente. Copialo manualmente.", "error");
+        }
       });
     }
 
@@ -748,6 +1032,10 @@
         registerForm.reset();
         trackEvent("register_success");
         setAuthStatus(registerStatus, "Cuenta creada. Revisa tu correo si tienes confirmacion activada.", "success");
+        if (result.data && result.data.session) {
+          setSessionInfo(result.data.session);
+          await syncReferralState(result.data.session);
+        }
         setAuthView("login");
         document.getElementById("loginEmail").value = email;
       } catch (_error) {
@@ -801,6 +1089,7 @@
         }
 
         setSessionInfo(result.data.session);
+        await syncReferralState(result.data.session);
         loginForm.reset();
         trackEvent("login_success");
         setAuthStatus(loginStatus, "Ingreso exitoso. Bienvenido de nuevo.", "success");
@@ -827,6 +1116,7 @@
           return;
         }
         setSessionInfo(null);
+        setReferralBoxVisible(false);
         trackEvent("logout_success");
         setAuthStatus(loginStatus, "Sesion cerrada correctamente.", "success");
       });

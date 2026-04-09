@@ -612,6 +612,47 @@ h3 {
   margin: 0;
 }
 
+.referral-box {
+  margin-top: 12px;
+  border: 1px solid rgba(29, 122, 247, 0.55);
+  border-radius: 14px;
+  padding: 14px;
+  background: linear-gradient(135deg, rgba(29, 122, 247, 0.14), rgba(16, 185, 129, 0.1));
+}
+
+.ref-code {
+  margin: 10px 0 0;
+  font-family: "Outfit", sans-serif;
+  font-size: 16px;
+  letter-spacing: 0.6px;
+}
+
+.ref-link-row {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+}
+
+.ref-link-row input {
+  font-size: 13px;
+}
+
+.ref-qr-wrap {
+  margin-top: 12px;
+  display: inline-flex;
+  padding: 8px;
+  border-radius: 12px;
+  background: #f8fbff;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.ref-qr-wrap canvas {
+  width: 220px;
+  max-width: 100%;
+  height: auto;
+}
+
 form {
   display: grid;
   gap: 10px;
@@ -787,6 +828,10 @@ summary:focus-visible {
   .grid2,
   .auth-grid,
   .formrow {
+    grid-template-columns: 1fr;
+  }
+
+  .ref-link-row {
     grid-template-columns: 1fr;
   }
 

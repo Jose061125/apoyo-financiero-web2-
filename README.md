@@ -28,6 +28,28 @@ https://jose061125.github.io/apoyo-financiero-web2-/
 - Registro: crea usuarios reales con Supabase Auth.
 - Login: autentica usuarios con email y contrasena.
 - Leads: al enviar el formulario de contacto, se guarda un registro en la tabla leads y ademas se abre WhatsApp con mensaje prellenado.
+- Referidos: cada usuario autenticado tiene su codigo, enlace y QR para invitar personas con `?ref=CODIGO`.
+
+## Programa de referidos con QR
+
+### Que incluye
+
+- Captura de codigo desde URL (`?ref=...`) y almacenamiento temporal.
+- Aplicacion automatica de referido cuando el usuario se registra/inicia sesion.
+- Panel "Invita y gana" con:
+	- codigo de referido
+	- enlace para compartir
+	- codigo QR
+	- boton para copiar enlace
+
+### Requisito de base de datos
+
+Ejecuta nuevamente [supabase-schema.sql](supabase-schema.sql) para crear:
+
+- `public.profiles`
+- `public.referrals`
+
+Estas tablas y politicas RLS son necesarias para que funcione el flujo de referidos.
 
 ## Analitica de conversion (opcional)
 
