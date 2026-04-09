@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="./styles.css?v=20260408" />
 </head>
 <body>
   <div class="bg-shape bg-a" aria-hidden="true"></div>
@@ -23,6 +23,7 @@
         <a href="#como-funciona">Como funciona</a>
         <a href="#servicios">Servicios</a>
         <a href="#testimonios">Testimonios</a>
+        <a href="#acceso">Acceso</a>
         <a href="#faq">Preguntas</a>
         <a href="#contacto">Contacto</a>
       </nav>
@@ -180,6 +181,65 @@
         </div>
       </section>
 
+      <section id="acceso" class="panel section">
+        <h2>Registro y acceso de usuarios</h2>
+        <p class="muted">Crea tu cuenta para iniciar tu proceso y luego entra con tus datos.</p>
+
+        <div class="auth-switch" role="tablist" aria-label="Cambiar entre registro y login">
+          <button type="button" class="auth-tab is-active" id="tabRegistro" data-auth-target="registro" role="tab" aria-selected="true">Registro</button>
+          <button type="button" class="auth-tab" id="tabLogin" data-auth-target="login" role="tab" aria-selected="false">Login</button>
+        </div>
+
+        <div class="auth-grid">
+          <article class="auth-card" id="registroBox">
+            <h3>Crear cuenta</h3>
+            <form id="registerForm" novalidate>
+              <div>
+                <label for="regNombre">Nombre completo</label>
+                <input id="regNombre" name="regNombre" placeholder="Tu nombre" autocomplete="name" required />
+              </div>
+              <div>
+                <label for="regEmail">Correo electronico</label>
+                <input id="regEmail" name="regEmail" type="email" placeholder="tuemail@ejemplo.com" autocomplete="email" required />
+              </div>
+              <div class="formrow">
+                <div>
+                  <label for="regPassword">Contrasena</label>
+                  <input id="regPassword" name="regPassword" type="password" minlength="6" placeholder="Minimo 6 caracteres" autocomplete="new-password" required />
+                </div>
+                <div>
+                  <label for="regPassword2">Confirmar contrasena</label>
+                  <input id="regPassword2" name="regPassword2" type="password" minlength="6" placeholder="Repite la contrasena" autocomplete="new-password" required />
+                </div>
+              </div>
+              <button class="btn primary" type="submit">Crear cuenta</button>
+              <p id="registerStatus" class="status" role="status" aria-live="polite"></p>
+            </form>
+          </article>
+
+          <article class="auth-card" id="loginBox">
+            <h3>Iniciar sesion</h3>
+            <form id="loginForm" novalidate>
+              <div>
+                <label for="loginEmail">Correo electronico</label>
+                <input id="loginEmail" name="loginEmail" type="email" placeholder="tuemail@ejemplo.com" autocomplete="email" required />
+              </div>
+              <div>
+                <label for="loginPassword">Contrasena</label>
+                <input id="loginPassword" name="loginPassword" type="password" placeholder="Tu contrasena" autocomplete="current-password" required />
+              </div>
+              <button class="btn whatsapp" type="submit">Entrar</button>
+              <p id="loginStatus" class="status" role="status" aria-live="polite"></p>
+            </form>
+          </article>
+        </div>
+
+        <div class="session-box" id="sessionBox" hidden>
+          <p id="sessionText" class="muted"></p>
+          <button class="btn" id="logoutBtn" type="button">Cerrar sesion</button>
+        </div>
+      </section>
+
       <section id="contacto" class="panel section">
         <h2>Formulario de contacto (opcional)</h2>
         <p class="muted">Al enviar, se abrira WhatsApp con tu mensaje listo.</p>
@@ -236,6 +296,8 @@
 
   <script>
     const WHATSAPP_NUMBER_E164 = "573112223344";
+    const AUTH_USERS_KEY = "apoyo_users";
+    const AUTH_SESSION_KEY = "apoyo_session";
 
     const baseMsg = "Hola, vengo de la pagina de Apoyo Financiero. Quiero recibir ayuda.";
     const waTop = document.getElementById("waTop");
@@ -243,6 +305,16 @@
     const form = document.getElementById("leadForm");
     const formStatus = document.getElementById("formStatus");
     const whatsError = document.getElementById("whatsError");
+    const registerForm = document.getElementById("registerForm");
+    const loginForm = document.getElementById("loginForm");
+    const registerStatus = document.getElementById("registerStatus");
+    const loginStatus = document.getElementById("loginStatus");
+    const sessionBox = document.getElementById("sessionBox");
+    const sessionText = document.getElementById("sessionText");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const authTabs = document.querySelectorAll(".auth-tab");
+    const registroBox = document.getElementById("registroBox");
+    const loginBox = document.getElementById("loginBox");
 
     function buildWaLink(text) {
       const encoded = encodeURIComponent(text);
@@ -254,6 +326,11 @@
       formStatus.className = "status show " + type;
     }
 
+    function setAuthStatus(element, message, type) {
+      element.textContent = message;
+      element.className = "status show " + type;
+    }
+
     function normalizeColombiaPhone(value) {
       return value.replace(/\D/g, "");
     }
@@ -262,8 +339,176 @@
       return /^3\d{9}$/.test(value);
     }
 
+    function normalizeEmail(value) {
+      return value.trim().toLowerCase();
+    }
+
+    function isValidEmail(value) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+    }
+
+    function getUsers() {
+      const raw = localStorage.getItem(AUTH_USERS_KEY);
+      if (!raw) {
+        return [];
+      }
+      try {
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (err) {
+        return [];
+      }
+    }
+
+    function saveUsers(users) {
+      localStorage.setItem(AUTH_USERS_KEY, JSON.stringify(users));
+    }
+
+    function setSession(user) {
+      localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify({
+        name: user.name,
+        email: user.email
+      }));
+      sessionText.textContent = "Sesion iniciada como " + user.name + " (" + user.email + ").";
+      sessionBox.hidden = false;
+    }
+
+    function clearSession() {
+      localStorage.removeItem(AUTH_SESSION_KEY);
+      sessionBox.hidden = true;
+      sessionText.textContent = "";
+    }
+
+    function restoreSession() {
+      const raw = localStorage.getItem(AUTH_SESSION_KEY);
+      if (!raw) {
+        return;
+      }
+      try {
+        const session = JSON.parse(raw);
+        if (session && session.name && session.email) {
+          sessionText.textContent = "Sesion iniciada como " + session.name + " (" + session.email + ").";
+          sessionBox.hidden = false;
+        }
+      } catch (err) {
+        clearSession();
+      }
+    }
+
+    function setAuthView(target) {
+      const showRegistro = target === "registro";
+      registroBox.hidden = !showRegistro;
+      loginBox.hidden = showRegistro;
+
+      authTabs.forEach(function (tab) {
+        const isCurrent = tab.getAttribute("data-auth-target") === target;
+        tab.classList.toggle("is-active", isCurrent);
+        tab.setAttribute("aria-selected", isCurrent ? "true" : "false");
+      });
+    }
+
     waTop.href = buildWaLink(baseMsg);
     waFloat.href = buildWaLink(baseMsg);
+    restoreSession();
+    setAuthView("registro");
+
+    authTabs.forEach(function (tab) {
+      tab.addEventListener("click", function () {
+        const target = tab.getAttribute("data-auth-target");
+        setAuthView(target);
+      });
+    });
+
+    registerForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      registerStatus.className = "status";
+
+      const name = document.getElementById("regNombre").value.trim();
+      const email = normalizeEmail(document.getElementById("regEmail").value);
+      const password = document.getElementById("regPassword").value;
+      const confirmPassword = document.getElementById("regPassword2").value;
+
+      if (!name || !email || !password || !confirmPassword) {
+        setAuthStatus(registerStatus, "Completa todos los campos del registro.", "error");
+        return;
+      }
+
+      if (!isValidEmail(email)) {
+        setAuthStatus(registerStatus, "Ingresa un correo valido.", "error");
+        return;
+      }
+
+      if (password.length < 6) {
+        setAuthStatus(registerStatus, "La contrasena debe tener minimo 6 caracteres.", "error");
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        setAuthStatus(registerStatus, "Las contrasenas no coinciden.", "error");
+        return;
+      }
+
+      const users = getUsers();
+      const alreadyExists = users.some(function (user) {
+        return user.email === email;
+      });
+
+      if (alreadyExists) {
+        setAuthStatus(registerStatus, "Ese correo ya esta registrado. Inicia sesion.", "error");
+        setAuthView("login");
+        document.getElementById("loginEmail").value = email;
+        return;
+      }
+
+      const user = {
+        name: name,
+        email: email,
+        password: password,
+        createdAt: new Date().toISOString()
+      };
+
+      users.push(user);
+      saveUsers(users);
+      setSession(user);
+      registerForm.reset();
+      setAuthStatus(registerStatus, "Cuenta creada correctamente. Ya quedaste con sesion iniciada.", "success");
+      setAuthView("login");
+      document.getElementById("loginEmail").value = email;
+    });
+
+    loginForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      loginStatus.className = "status";
+
+      const email = normalizeEmail(document.getElementById("loginEmail").value);
+      const password = document.getElementById("loginPassword").value;
+
+      if (!email || !password) {
+        setAuthStatus(loginStatus, "Ingresa correo y contrasena.", "error");
+        return;
+      }
+
+      const users = getUsers();
+      const user = users.find(function (item) {
+        return item.email === email && item.password === password;
+      });
+
+      if (!user) {
+        setAuthStatus(loginStatus, "Credenciales invalidas. Verifica e intenta de nuevo.", "error");
+        return;
+      }
+
+      setSession(user);
+      loginForm.reset();
+      setAuthStatus(loginStatus, "Ingreso exitoso. Bienvenido de nuevo.", "success");
+    });
+
+    logoutBtn.addEventListener("click", function () {
+      clearSession();
+      registerStatus.className = "status";
+      loginStatus.className = "status";
+      setAuthStatus(loginStatus, "Sesion cerrada correctamente.", "success");
+    });
 
     form.addEventListener("submit", function (e) {
       e.preventDefault();
