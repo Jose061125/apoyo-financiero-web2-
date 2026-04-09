@@ -12,14 +12,17 @@
   <link rel="stylesheet" href="./styles.css?v=20260408" />
 </head>
 <body>
+  <a class="skip-link" href="#contenido">Saltar al contenido principal</a>
   <div class="bg-shape bg-a" aria-hidden="true"></div>
   <div class="bg-shape bg-b" aria-hidden="true"></div>
 
   <div class="wrap">
     <header class="topbar">
       <a class="logo" href="#inicio" aria-label="Ir al inicio">Apoyo Financiero</a>
+      <button class="nav-toggle" id="navToggle" type="button" aria-expanded="false" aria-controls="mobileNav" aria-label="Abrir menu de navegacion">Menu</button>
       <nav class="nav" aria-label="Navegacion principal">
         <a href="#inicio">Inicio</a>
+        <a href="#quien-soy">Quien soy</a>
         <a href="#como-funciona">Como funciona</a>
         <a href="#servicios">Servicios</a>
         <a href="#testimonios">Testimonios</a>
@@ -29,27 +32,53 @@
       </nav>
     </header>
 
-    <main>
+    <nav class="mobile-nav" id="mobileNav" aria-label="Navegacion movil" hidden>
+      <a href="#inicio">Inicio</a>
+      <a href="#quien-soy">Quien soy</a>
+      <a href="#como-funciona">Como funciona</a>
+      <a href="#servicios">Servicios</a>
+      <a href="#testimonios">Testimonios</a>
+      <a href="#acceso">Acceso</a>
+      <a href="#faq">Preguntas</a>
+      <a href="#contacto">Contacto</a>
+    </nav>
+
+    <main id="contenido" tabindex="-1">
       <section id="inicio" class="hero">
         <article class="panel panel-hero">
           <p class="eyebrow">Asesoria financiera para Colombia</p>
-          <h1>Un plan claro para mejorar tu situacion financiera</h1>
+          <h1>Te ayudo a ordenar tus finanzas y avanzar con claridad</h1>
           <p class="lead">
-            Te acompano paso a paso para que no te pierdas en el proceso. Enfoque en apoyo para credito y apoyo para emprendedores.
+            Acompanamiento cercano para personas y emprendedores que necesitan estructura, decisiones concretas y tranquilidad financiera.
           </p>
 
           <div class="quick-grid" aria-label="Beneficios">
             <article class="quick-item">
-              <h3>Ruta sencilla</h3>
-              <p>Sabes que hacer primero, que hacer despues y como medir avances.</p>
+              <h3><span class="icon-chip" aria-hidden="true">RS</span>Ruta sencilla</h3>
+              <p>Sabes que hacer primero, despues y como medir avances semana a semana.</p>
             </article>
             <article class="quick-item">
-              <h3>Sin enredos</h3>
-              <p>Explicaciones claras y acciones concretas para cada etapa.</p>
+              <h3><span class="icon-chip" aria-hidden="true">DC</span>Decisiones claras</h3>
+              <p>Explicaciones simples, sin terminos complicados ni promesas vacias.</p>
             </article>
             <article class="quick-item">
-              <h3>Acompanamiento real</h3>
+              <h3><span class="icon-chip" aria-hidden="true">AR</span>Acompanamiento real</h3>
               <p>Seguimiento para mantener el rumbo y evitar retrocesos.</p>
+            </article>
+          </div>
+
+          <div class="trust-stats" aria-label="Indicadores de confianza">
+            <article class="stat-item">
+              <p class="stat-value">+120</p>
+              <p class="stat-label">personas orientadas</p>
+            </article>
+            <article class="stat-item">
+              <p class="stat-value">24h</p>
+              <p class="stat-label">respuesta promedio</p>
+            </article>
+            <article class="stat-item">
+              <p class="stat-value">1 a 1</p>
+              <p class="stat-label">acompanamiento personalizado</p>
             </article>
           </div>
 
@@ -71,8 +100,30 @@
             <li>Definimos prioridades y plan de accion.</li>
             <li>Hacemos seguimiento para avanzar.</li>
           </ol>
+          <p class="muted">Primera orientacion enfocada en acciones concretas y orden financiero.</p>
           <p class="badge">Horario Colombia (COT): coordinamos por WhatsApp</p>
         </aside>
+      </section>
+
+      <section id="quien-soy" class="panel section">
+        <h2>Quien te acompana en este proceso</h2>
+        <div class="profile-grid">
+          <article class="profile-card">
+            <div class="avatar" aria-hidden="true">AF</div>
+            <div>
+              <h3>Asesoria cercana y practica</h3>
+              <p class="muted">Trabajo contigo para convertir preocupaciones financieras en un plan claro y ejecutable.</p>
+            </div>
+          </article>
+          <article class="profile-card">
+            <h3>Mi enfoque de trabajo</h3>
+            <ul class="list">
+              <li>Escucho tu contexto antes de proponer soluciones.</li>
+              <li>Priorizamos lo urgente sin perder de vista tu meta final.</li>
+              <li>Cada recomendacion incluye un siguiente paso medible.</li>
+            </ul>
+          </article>
+        </div>
       </section>
 
       <section id="como-funciona" class="panel section">
@@ -104,7 +155,7 @@
         <h2>Servicios detallados</h2>
         <div class="grid2">
           <article class="card">
-            <h3>Apoyo para credito</h3>
+            <h3><span class="icon-chip" aria-hidden="true">CR</span>Apoyo para credito</h3>
             <p>Mejoramos orden financiero personal para aumentar tus opciones.</p>
             <ul class="list">
               <li>Lectura de situacion actual.</li>
@@ -113,7 +164,7 @@
             </ul>
           </article>
           <article class="card">
-            <h3>Apoyo para emprendedores</h3>
+            <h3><span class="icon-chip" aria-hidden="true">EM</span>Apoyo para emprendedores</h3>
             <p>Organizamos las finanzas del negocio para decisiones con datos.</p>
             <ul class="list">
               <li>Costos, precios y margen.</li>
@@ -132,14 +183,17 @@
           <article class="quote-card">
             <p class="quote-text">"Tenia deudas desordenadas y no sabia por donde empezar. En pocas semanas ya tenia un plan claro y mas tranquilidad."</p>
             <p class="quote-author">Laura M. - Medellin</p>
+            <p class="quote-role">Caso: orden de deudas y flujo mensual</p>
           </article>
           <article class="quote-card">
             <p class="quote-text">"Como emprendedor, por fin entendi mis costos reales. Ahora mis precios y mi caja tienen sentido."</p>
             <p class="quote-author">Carlos R. - Cali</p>
+            <p class="quote-role">Caso: precios y control de caja</p>
           </article>
           <article class="quote-card">
             <p class="quote-text">"Lo mejor fue la claridad. Me explicaron todo sin enredos y con pasos faciles de seguir."</p>
             <p class="quote-author">Andrea P. - Bogota</p>
+            <p class="quote-role">Caso: plan financiero personal</p>
           </article>
         </div>
 
@@ -178,6 +232,11 @@
             <summary>Sirve si voy empezando?</summary>
             <p>Si, la metodologia funciona tanto para iniciar como para reorganizarte.</p>
           </details>
+        </div>
+
+        <div class="cta-band">
+          <p>Si prefieres ir directo: escribe por WhatsApp y te respondo con una ruta inicial para tu caso.</p>
+          <a class="btn whatsapp" href="#contacto">Quiero mi ruta inicial</a>
         </div>
       </section>
 
@@ -252,8 +311,8 @@
             </div>
             <div>
               <label for="whats">Tu WhatsApp</label>
-              <input id="whats" name="whats" placeholder="3001234567" inputmode="numeric" autocomplete="tel" />
-              <p class="field-note">Opcional. Solo numeros, 10 digitos para Colombia.</p>
+              <input id="whats" name="whats" placeholder="3001234567" inputmode="numeric" autocomplete="tel" aria-describedby="whatsHelp whatsError" />
+              <p class="field-note" id="whatsHelp">Opcional. Solo numeros, 10 digitos para Colombia.</p>
               <p class="error-text" id="whatsError" aria-live="polite"></p>
             </div>
           </div>
@@ -275,17 +334,49 @@
 
           <div>
             <label for="mensaje">Tu situacion</label>
-            <textarea id="mensaje" name="mensaje" placeholder="Cuentame brevemente tu caso" required></textarea>
+            <textarea id="mensaje" name="mensaje" placeholder="Cuentame brevemente tu caso" maxlength="600" aria-describedby="mensajeCount" required></textarea>
+            <p class="field-note" id="mensajeCount">0/600 caracteres</p>
+          </div>
+
+          <div class="consent-box">
+            <input id="consentData" name="consentData" type="checkbox" required />
+            <label for="consentData">
+              Acepto el tratamiento de mis datos para recibir orientacion financiera y contacto por WhatsApp.
+            </label>
           </div>
 
           <button class="btn whatsapp" type="submit">Enviar por WhatsApp</button>
           <p id="formStatus" class="status" role="status" aria-live="polite"></p>
         </form>
+
+        <div id="successBox" class="success-box" hidden>
+          <h3>Solicitud enviada</h3>
+          <p>Tu mensaje quedo listo. En breve recibiras respuesta por WhatsApp para coordinar los siguientes pasos.</p>
+          <ul class="list success-list">
+            <li>Tiempo estimado de primera respuesta: entre 10 minutos y 2 horas en horario laboral.</li>
+            <li>Ten a la mano tus objetivos principales para avanzar mas rapido.</li>
+            <li>Por seguridad, nunca compartas claves ni codigos.</li>
+          </ul>
+          <div class="btnrow">
+            <a id="waRetry" class="btn whatsapp" href="#" target="_blank" rel="noopener">Abrir WhatsApp otra vez</a>
+          </div>
+        </div>
+      </section>
+
+      <section id="privacidad" class="panel section">
+        <h2>Privacidad y tratamiento de datos</h2>
+        <p class="muted">Usamos tus datos solo para orientarte y darte seguimiento del proceso financiero solicitado.</p>
+        <ul class="list">
+          <li>Datos recopilados: nombre, tipo de ayuda, ciudad, WhatsApp opcional y mensaje.</li>
+          <li>Finalidad: contacto y orientacion personalizada sobre tu solicitud.</li>
+          <li>Conservacion: se mantienen solo el tiempo necesario para gestionar tu caso.</li>
+          <li>Derechos: puedes pedir actualizacion o eliminacion de datos escribiendo por WhatsApp.</li>
+        </ul>
       </section>
     </main>
 
     <footer class="foot">
-      <div>© <span id="y"></span> Apoyo Financiero</div>
+      <div>(c) <span id="y"></span> Apoyo Financiero</div>
       <div>Colombia - Contacto por WhatsApp</div>
     </footer>
   </div>
@@ -299,13 +390,19 @@
     const WHATSAPP_NUMBER_E164 = "573112223344";
     const SUPABASE_URL = "https://ztxbdwcfxtkmjcgbuaxq.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_U3YBitnqeWHKdGtYgPENsw_VkcOFl5O";
+    const ANALYTICS_GA4_ID = "";
 
     const baseMsg = "Hola, vengo de la pagina de Apoyo Financiero. Quiero recibir ayuda.";
     const waTop = document.getElementById("waTop");
     const waFloat = document.getElementById("waFloat");
+    const waRetry = document.getElementById("waRetry");
     const form = document.getElementById("leadForm");
     const formStatus = document.getElementById("formStatus");
     const whatsError = document.getElementById("whatsError");
+    const mensajeField = document.getElementById("mensaje");
+    const mensajeCount = document.getElementById("mensajeCount");
+    const consentData = document.getElementById("consentData");
+    const successBox = document.getElementById("successBox");
     const registerForm = document.getElementById("registerForm");
     const loginForm = document.getElementById("loginForm");
     const registerStatus = document.getElementById("registerStatus");
@@ -316,6 +413,9 @@
     const authTabs = document.querySelectorAll(".auth-tab");
     const registroBox = document.getElementById("registroBox");
     const loginBox = document.getElementById("loginBox");
+    const navToggle = document.getElementById("navToggle");
+    const mobileNav = document.getElementById("mobileNav");
+    const mobileNavLinks = document.querySelectorAll("#mobileNav a");
     const supabaseClient = createSupabaseClient();
 
     function buildWaLink(text) {
@@ -337,6 +437,58 @@
     function setStatus(message, type) {
       formStatus.textContent = message;
       formStatus.className = "status show " + type;
+    }
+
+    function setButtonLoading(button, isLoading, loadingText) {
+      if (!button) {
+        return;
+      }
+
+      if (!button.dataset.defaultLabel) {
+        button.dataset.defaultLabel = button.textContent;
+      }
+
+      if (isLoading) {
+        button.disabled = true;
+        button.classList.add("is-loading");
+        button.textContent = loadingText;
+        return;
+      }
+
+      button.disabled = false;
+      button.classList.remove("is-loading");
+      button.textContent = button.dataset.defaultLabel;
+    }
+
+    function initAnalytics() {
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = window.gtag || function () {
+        window.dataLayer.push(arguments);
+      };
+
+      if (!ANALYTICS_GA4_ID) {
+        return;
+      }
+
+      const gaScript = document.createElement("script");
+      gaScript.async = true;
+      gaScript.src = "https://www.googletagmanager.com/gtag/js?id=" + encodeURIComponent(ANALYTICS_GA4_ID);
+      document.head.appendChild(gaScript);
+
+      window.gtag("js", new Date());
+      window.gtag("config", ANALYTICS_GA4_ID, {
+        anonymize_ip: true
+      });
+    }
+
+    function trackEvent(name, params) {
+      const safeParams = params || {};
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push(Object.assign({ event: name }, safeParams));
+
+      if (typeof window.gtag === "function" && ANALYTICS_GA4_ID) {
+        window.gtag("event", name, safeParams);
+      }
     }
 
     function setAuthStatus(element, message, type) {
@@ -417,10 +569,70 @@
       });
     }
 
+    function setMobileMenu(open) {
+      if (!mobileNav || !navToggle) {
+        return;
+      }
+
+      mobileNav.hidden = !open;
+      navToggle.setAttribute("aria-expanded", open ? "true" : "false");
+      navToggle.textContent = open ? "Cerrar" : "Menu";
+    }
+
+    function initScrollReveal() {
+      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (prefersReducedMotion) {
+        return;
+      }
+
+      const revealables = document.querySelectorAll(".panel, .quick-item, .step, .card, .quote-card, .trust-item, .stat-item, .profile-card, .cta-band");
+      if (!revealables.length) {
+        return;
+      }
+
+      document.body.classList.add("js-enhanced");
+      revealables.forEach(function (element, index) {
+        element.classList.add("revealable");
+        element.style.setProperty("--reveal-delay", String(index % 5 * 40) + "ms");
+      });
+
+      const observer = new IntersectionObserver(function (entries, obs) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) {
+            return;
+          }
+          entry.target.classList.add("is-visible");
+          obs.unobserve(entry.target);
+        });
+      }, {
+        threshold: 0.12,
+        rootMargin: "0px 0px -40px 0px"
+      });
+
+      revealables.forEach(function (element) {
+        observer.observe(element);
+      });
+    }
+
     waTop.href = buildWaLink(baseMsg);
     waFloat.href = buildWaLink(baseMsg);
+    waRetry.href = buildWaLink(baseMsg);
+    initAnalytics();
+    trackEvent("page_view", {
+      page_path: window.location.pathname,
+      page_title: document.title
+    });
+    initScrollReveal();
     restoreSession();
     setAuthView("registro");
+    setMobileMenu(false);
+
+    if (mensajeField && mensajeCount) {
+      mensajeField.addEventListener("input", function () {
+        const current = mensajeField.value.length;
+        mensajeCount.textContent = current + "/600 caracteres";
+      });
+    }
 
     if (isSupabaseReady()) {
       supabaseClient.auth.onAuthStateChange(function (_event, session) {
@@ -431,13 +643,53 @@
     authTabs.forEach(function (tab) {
       tab.addEventListener("click", function () {
         const target = tab.getAttribute("data-auth-target");
+        trackEvent("auth_tab_click", { target: target });
         setAuthView(target);
       });
     });
 
-    registerForm.addEventListener("submit", function (e) {
+    waTop.addEventListener("click", function () {
+      trackEvent("whatsapp_click", { source: "hero_button" });
+    });
+
+    waFloat.addEventListener("click", function () {
+      trackEvent("whatsapp_click", { source: "floating_button" });
+    });
+
+    waRetry.addEventListener("click", function () {
+      trackEvent("whatsapp_click", { source: "retry_button" });
+    });
+
+    if (navToggle) {
+      navToggle.addEventListener("click", function () {
+        const isOpen = navToggle.getAttribute("aria-expanded") === "true";
+        trackEvent("mobile_menu_toggle", { open: !isOpen });
+        setMobileMenu(!isOpen);
+      });
+    }
+
+    mobileNavLinks.forEach(function (link) {
+      link.addEventListener("click", function () {
+        trackEvent("mobile_menu_navigation", { destination: link.getAttribute("href") || "" });
+        setMobileMenu(false);
+      });
+    });
+
+    window.addEventListener("resize", function () {
+      if (window.innerWidth > 980) {
+        setMobileMenu(false);
+      }
+    });
+
+    registerForm.addEventListener("submit", async function (e) {
       e.preventDefault();
       registerStatus.className = "status";
+      const submitBtn = registerForm.querySelector('button[type="submit"]');
+      trackEvent("register_attempt");
+
+      if (submitBtn && submitBtn.disabled) {
+        return;
+      }
 
       const name = document.getElementById("regNombre").value.trim();
       const email = normalizeEmail(document.getElementById("regEmail").value);
@@ -469,30 +721,52 @@
         return;
       }
 
-      supabaseClient.auth.signUp({
-        email: email,
-        password: password,
-        options: {
-          data: {
-            full_name: name
+      if (!navigator.onLine) {
+        setAuthStatus(registerStatus, "No tienes conexion a internet. Verifica tu red e intenta de nuevo.", "error");
+        return;
+      }
+
+      setButtonLoading(submitBtn, true, "Creando cuenta...");
+
+      try {
+        const result = await supabaseClient.auth.signUp({
+          email: email,
+          password: password,
+          options: {
+            data: {
+              full_name: name
+            }
           }
-        }
-      }).then(function (result) {
+        });
+
         if (result.error) {
+          trackEvent("register_error", { type: "supabase" });
           setAuthStatus(registerStatus, "No se pudo crear la cuenta: " + result.error.message, "error");
           return;
         }
 
         registerForm.reset();
+        trackEvent("register_success");
         setAuthStatus(registerStatus, "Cuenta creada. Revisa tu correo si tienes confirmacion activada.", "success");
         setAuthView("login");
         document.getElementById("loginEmail").value = email;
-      });
+      } catch (_error) {
+        trackEvent("register_error", { type: "exception" });
+        setAuthStatus(registerStatus, "No se pudo crear la cuenta. Intenta nuevamente en unos segundos.", "error");
+      } finally {
+        setButtonLoading(submitBtn, false, "Creando cuenta...");
+      }
     });
 
-    loginForm.addEventListener("submit", function (e) {
+    loginForm.addEventListener("submit", async function (e) {
       e.preventDefault();
       loginStatus.className = "status";
+      const submitBtn = loginForm.querySelector('button[type="submit"]');
+      trackEvent("login_attempt");
+
+      if (submitBtn && submitBtn.disabled) {
+        return;
+      }
 
       const email = normalizeEmail(document.getElementById("loginEmail").value);
       const password = document.getElementById("loginPassword").value;
@@ -507,19 +781,35 @@
         return;
       }
 
-      supabaseClient.auth.signInWithPassword({
-        email: email,
-        password: password
-      }).then(function (result) {
+      if (!navigator.onLine) {
+        setAuthStatus(loginStatus, "No tienes conexion a internet. Verifica tu red e intenta de nuevo.", "error");
+        return;
+      }
+
+      setButtonLoading(submitBtn, true, "Ingresando...");
+
+      try {
+        const result = await supabaseClient.auth.signInWithPassword({
+          email: email,
+          password: password
+        });
+
         if (result.error) {
+          trackEvent("login_error", { type: "credentials_or_confirmation" });
           setAuthStatus(loginStatus, "Credenciales invalidas o usuario no confirmado.", "error");
           return;
         }
 
         setSessionInfo(result.data.session);
         loginForm.reset();
+        trackEvent("login_success");
         setAuthStatus(loginStatus, "Ingreso exitoso. Bienvenido de nuevo.", "success");
-      });
+      } catch (_error) {
+        trackEvent("login_error", { type: "exception" });
+        setAuthStatus(loginStatus, "No se pudo iniciar sesion. Intenta de nuevo en unos segundos.", "error");
+      } finally {
+        setButtonLoading(submitBtn, false, "Ingresando...");
+      }
     });
 
     logoutBtn.addEventListener("click", function () {
@@ -532,22 +822,33 @@
         registerStatus.className = "status";
         loginStatus.className = "status";
         if (result.error) {
+          trackEvent("logout_error");
           setAuthStatus(loginStatus, "No se pudo cerrar sesion.", "error");
           return;
         }
         setSessionInfo(null);
+        trackEvent("logout_success");
         setAuthStatus(loginStatus, "Sesion cerrada correctamente.", "success");
       });
     });
 
-    form.addEventListener("submit", function (e) {
+    form.addEventListener("submit", async function (e) {
       e.preventDefault();
+      const submitBtn = form.querySelector('button[type="submit"]');
+
+      if (submitBtn && submitBtn.disabled) {
+        return;
+      }
+
       const nombre = document.getElementById("nombre").value.trim();
       const whatsRaw = document.getElementById("whats").value.trim();
       const whats = normalizeColombiaPhone(whatsRaw);
       const tipo = document.getElementById("tipo").value;
       const ciudad = document.getElementById("ciudad").value.trim();
       const mensaje = document.getElementById("mensaje").value.trim();
+      trackEvent("lead_submit_attempt", {
+        tipo: tipo || "sin_tipo"
+      });
 
       whatsError.textContent = "";
       formStatus.className = "status";
@@ -557,11 +858,26 @@
         return;
       }
 
+      if (!consentData.checked) {
+        trackEvent("lead_validation_error", { field: "consent" });
+        setStatus("Debes aceptar el tratamiento de datos para continuar.", "error");
+        consentData.focus();
+        return;
+      }
+
       if (whats && !isValidColombiaMobile(whats)) {
+        trackEvent("lead_validation_error", { field: "whatsapp" });
         whatsError.textContent = "Revisa el WhatsApp. Debe tener 10 digitos y empezar por 3.";
         setStatus("Corrige el numero de WhatsApp o dejalo vacio.", "error");
         return;
       }
+
+      if (!navigator.onLine) {
+        setStatus("No tienes conexion a internet. Verifica tu red e intenta de nuevo.", "error");
+        return;
+      }
+
+      setButtonLoading(submitBtn, true, "Preparando mensaje...");
 
       const text =
         "Hola, soy " + nombre + ". " +
@@ -570,17 +886,40 @@
         (whats ? "Mi WhatsApp: " + whats + ". " : "") +
         "Detalles: " + mensaje;
 
-      saveLead({
-        nombre: nombre,
-        tipo: tipo,
-        ciudad: ciudad,
-        whats: whats,
-        mensaje: mensaje
-      });
+      try {
+        await saveLead({
+          nombre: nombre,
+          tipo: tipo,
+          ciudad: ciudad,
+          whats: whats,
+          mensaje: mensaje
+        });
 
-      setStatus("Abriendo WhatsApp con tu mensaje...", "success");
-      window.open(buildWaLink(text), "_blank");
-      form.reset();
+        const waWindow = window.open(buildWaLink(text), "_blank", "noopener");
+        if (!waWindow) {
+          trackEvent("whatsapp_popup_blocked", { source: "contact_form" });
+          setStatus("No se pudo abrir WhatsApp automaticamente. Revisa el bloqueo de ventanas y vuelve a intentar.", "error");
+          return;
+        }
+
+        trackEvent("lead_submit_success", {
+          tipo: tipo
+        });
+        trackEvent("whatsapp_click", { source: "contact_form_submit" });
+        setStatus("Abriendo WhatsApp con tu mensaje...", "success");
+        successBox.hidden = false;
+        successBox.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        waRetry.href = buildWaLink(text);
+        form.reset();
+        if (mensajeCount) {
+          mensajeCount.textContent = "0/600 caracteres";
+        }
+      } catch (_error) {
+        trackEvent("lead_submit_error", { type: "exception" });
+        setStatus("No se pudo procesar tu solicitud. Intenta nuevamente.", "error");
+      } finally {
+        setButtonLoading(submitBtn, false, "Preparando mensaje...");
+      }
     });
 
     document.getElementById("y").textContent = new Date().getFullYear();
